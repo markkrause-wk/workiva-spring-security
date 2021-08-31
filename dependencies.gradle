@@ -1,0 +1,16 @@
+ext {
+	versions = [:]
+	libraries = [:]
+}
+
+versions.spring_cloud = '2020.0.3'
+versions.app_intelligence = '7.0.90'
+versions.junit_jupiter = '5.7.2'
+versions.newrelic = '7.1.1'
+versions.platform = '0.1.74'
+
+libraries.platform_spring = "com.workiva.platform:platform-spring:${versions.platform}"
+libraries.platform_core = "com.workiva.platform:platform-core:${versions.platform}"
+libraries.platform_iam = "com.workiva.platform:platform-iam:${versions.platform}"
+libraries.newrelic = "com.newrelic.agent.java:newrelic-agent:${versions.newrelic}"
+libraries.app_intelligence = "com.workiva.appintelligence:app-intelligence:${versions.app_intelligence}"

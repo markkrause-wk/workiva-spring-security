@@ -1,0 +1,11 @@
+version: 2
+meta:
+  repo: workiva-spring-security
+  tags:
+    organization: Workiva
+    taxonomy_component: TBD
+    team: TBD
+
+services:
+  workiva-spring-security:
+    ingress: true

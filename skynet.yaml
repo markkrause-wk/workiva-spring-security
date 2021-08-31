@@ -1,0 +1,34 @@
+# Testing with Skynet 2.0 - https://wiki.atl.workiva.net/display/SKYNET/Testing+with+Skynet+2.0?src=search
+name: workiva-spring-security_initial_skynet
+
+image: drydock.workiva.net/workiva/skynet-images:service_platform_skynet-latest
+
+timeout: moderate
+
+size: medium
+
+requires:
+  Workiva/workiva-spring-security: docker
+
+artifacts:
+  - /shared
+
+run:
+   on-pull-request: true
+   on-promotion: true
+   when-branch-name-is:
+     - .*_debug
+     - ^refs/tags/.+
+     - master
+
+env:
+    - TEST_BASE_URL=http://workiva-spring-security:8080
+
+scripts:
+  - docker run -d -p 8080:8080 --network=${SKYNET_NETWORK} --network-alias=workiva-spring-security -e PORT=8080 ${SKYNET_APPLICATION_WORKIVA_SPRING_SECURITY}
+  - sleep 10
+  - >
+    docker run -v ${SKYNET_TESTING_PATH}:/mount -w /mount
+    -e TEST_BASE_URL=$TEST_BASE_URL
+    --network=${SKYNET_NETWORK}
+    gradle:jdk11 gradle --no-daemon -Pskynet :skynet_tests:test

@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: sunday
+      time: "20:00"
+      timezone: America/Chicago
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
+      

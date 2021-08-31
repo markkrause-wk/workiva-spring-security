@@ -1,0 +1,102 @@
+plugins {
+    id "java"
+    id "idea"
+    id "checkstyle"
+    id "jacoco"
+    id "com.diffplug.spotless" version "5.14.3"
+    id "io.freefair.lombok" version "5.3.3.3"
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "org.openapi.generator" version "5.2.0"
+    id "org.springframework.boot" version "2.5.3"
+}
+
+apply from: 'dependencies.gradle'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+repositories {
+    maven {
+        url = uri("https://workivaeast.jfrog.io/workivaeast/maven-prod")
+        credentials {
+            username = System.getenv("ARTIFACTORY_PRO_USER")
+            password = System.getenv("ARTIFACTORY_PRO_PASS")
+        }
+    }
+    maven {
+        url = uri("https://workivaeast.jfrog.io/workivaeast/maven-dev")
+        credentials {
+            username = System.getenv("ARTIFACTORY_PRO_USER")
+            password = System.getenv("ARTIFACTORY_PRO_PASS")
+        }
+    }
+    mavenLocal()
+}
+
+configurations {
+    javaagent
+}
+
+task syncJavaAgentDependencies(type: Sync) {
+    from configurations.javaagent
+    into "build/libs/javaagent"
+}
+
+
+dependencies {
+
+    implementation libraries.platform_spring
+    implementation libraries.platform_core
+    implementation libraries.platform_iam
+    implementation libraries.app_intelligence
+    implementation libraries.platform_spring
+    implementation libraries.platform_core
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-security-test'
+
+    javaagent libraries.newrelic
+
+    annotationProcessor 'org.springframework:spring-context-indexer'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+}
+
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.spring_cloud}"
+    }
+}
+springBoot {
+    buildInfo()
+}
+bootJar {
+    manifest {
+        attributes 'Start-Class': 'com.workiva.om.activity.Application'
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': project.version
+        attributes 'Implementation-Vendor': 'Workiva'
+        attributes 'Built-By': System.getProperty('user.name')
+        attributes 'Build-JDK': System.getProperty('java.version')
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+    systemProperty 'file.encoding', 'UTF-8'
+}

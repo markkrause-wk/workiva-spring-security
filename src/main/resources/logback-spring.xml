@@ -1,0 +1,20 @@
+<configuration>
+  <springProfile name="!deployed">
+    <appender name="CONSOLE" class="com.workiva.appintelligence.logging.LogbackConsoleAppender">
+      <encoder>
+        <pattern>%gray(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%thread] %highlight(%-5level %logger{36}) %magenta(%X{correlationId}) - %X{method} %X{requestPath} %msg %n</pattern>
+      </encoder>
+    </appender>
+
+    <root level="${LOGBACK_LOG_LEVEL:-INFO}">
+      <appender-ref ref="CONSOLE" />
+    </root>
+  </springProfile>
+
+  <springProfile name="deployed">
+    <appender name="SOCKET" class="com.workiva.appintelligence.logging.LogbackUnixSocketAppender" />
+    <root level="${LOGBACK_LOG_LEVEL:-INFO}">
+      <appender-ref ref="SOCKET" />
+    </root>
+  </springProfile>
+</configuration>

@@ -1,0 +1,29 @@
+plugins {
+    id "java"
+    id "idea"
+    id "application"
+}
+
+test {
+    onlyIf {
+        project.hasProperty('skynet')
+    }
+    useJUnitPlatform()
+    dependsOn "cleanTest"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://workivaeast.jfrog.io/workivaeast/maven-prod")
+        credentials {
+            username = System.getenv("ARTIFACTORY_PRO_USER")
+            password = System.getenv("ARTIFACTORY_PRO_PASS")
+        }
+    }
+}
+
+dependencies {
+    testImplementation "org.springframework.boot:spring-boot-starter-webflux:2.5.4"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:2.5.4"
+}
